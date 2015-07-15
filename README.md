@@ -5,13 +5,12 @@ Running kubernetes locally via Docker
 
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
-- [Step One: Run k8s-docker.sh](#step-one-run-k8s-docker.sh)
+- [Step One: Run k8s-docker.sh](#step-one-run-k8s-dockersh)
 - [Step Two: Get kubectl](#step-two-get-kubectl)
 - [Step Three: Enable addons](#step-three-enable-addons)
 - [Test it out](#test-it-out)
 - [Run an application](#run-an-application)
 - [Expose it as a service:](#expose-it-as-a-service)
-- [A note on turning down your cluster](#a-note-on-turning-down-your-cluster)
 
 ### Overview
 
