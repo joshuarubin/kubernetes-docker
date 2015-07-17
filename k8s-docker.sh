@@ -7,11 +7,14 @@ DNS_DOMAIN=cluster.local
 
 ########## ETCD ##########
 
- docker run \
+docker create -v /var/etcd/data --name etcd-data busybox true
+
+docker run \
   --net=host \
   -d \
   --name=etcd \
   --restart=always \
+  --volumes-from etcd-data \
   gcr.io/google_containers/etcd:${ETCD_VERSION} /usr/local/bin/etcd \
     --addr=127.0.0.1:4001 \
     --bind-addr=0.0.0.0:4001 \
@@ -46,7 +49,7 @@ docker run \
   -d \
   gcr.io/google_containers/hyperkube:${K8S_VERSION} /hyperkube \
   apiserver \
-    --portal_net=10.0.0.0/16 \
+    --service-cluster-ip-range=10.0.0.0/16 \
     --insecure_bind_address=0.0.0.0 \
     --insecure_port=8080 \
     --etcd_servers=http://127.0.0.1:4001 \
