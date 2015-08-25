@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ETCD_VERSION=2.0.12
-K8S_VERSION=v0.21.2
+K8S_VERSION=v1.0.3
 DNS_IP=10.0.0.10
 DNS_DOMAIN=cluster.local
 
