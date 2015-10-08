@@ -1,7 +1,7 @@
 #!/bin/bash
 
-ETCD_VERSION=2.0.12
-K8S_VERSION=v1.0.3
+ETCD_VERSION=2.2.0
+K8S_VERSION=v1.0.6
 DNS_IP=10.0.0.10
 DNS_DOMAIN=cluster.local
 
@@ -15,7 +15,7 @@ docker run \
   --name=etcd \
   --restart=always \
   --volumes-from etcd-data \
-  gcr.io/google_containers/etcd:${ETCD_VERSION} /usr/local/bin/etcd \
+  quay.io/coreos/etcd:v${ETCD_VERSION} \
     --addr=127.0.0.1:4001 \
     --bind-addr=0.0.0.0:4001 \
     --data-dir=/var/etcd/data
