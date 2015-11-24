@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ETCD_VERSION=2.2.0
-K8S_VERSION=v1.0.6
+K8S_VERSION=v1.1.2
 DNS_IP=10.0.0.10
 DNS_DOMAIN=cluster.local
 
@@ -24,16 +24,23 @@ docker run \
 
 docker run \
   --net=host \
+  --volume=/:/rootfs:ro \
+  --volume=/sys:/sys:ro \
+  --volume=/dev:/dev \
+  --volume=/var/lib/docker/:/var/lib/docker:rw \
+  --volume=/var/lib/kubelet/:/var/lib/kubelet:rw \
+  --volume=/var/run:/var/run:rw \
   --name=kubelet \
+  --pid=host \
+  --privileged=true \
+  --detach \
   --restart=always \
-  -d \
-  -v /var/run/docker.sock:/var/run/docker.sock \
   gcr.io/google_containers/hyperkube:${K8S_VERSION} /hyperkube \
   kubelet \
     --api_servers=http://127.0.0.1:8080 \
     --v=1 \
     --address=0.0.0.0 \
-    --enable_server \
+    --containerized \
     --hostname_override=127.0.0.1 \
     --allow_privileged=true \
     --logtostderr=true \
