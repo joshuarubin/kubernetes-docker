@@ -56,6 +56,7 @@ docker run \
   -d \
   gcr.io/google_containers/hyperkube:${K8S_VERSION} /hyperkube \
   apiserver \
+    --runtime-config=extensions/v1beta1/daemonsets=true \
     --service-cluster-ip-range=10.0.0.0/16 \
     --insecure_bind_address=0.0.0.0 \
     --insecure_port=8080 \
