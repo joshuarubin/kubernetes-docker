@@ -1,20 +1,20 @@
 version: '2'
+
+volumes:
+  etcd-data: {}
+
 services:
-  etcd-data:
-    volumes:
-      - /var/etcd/data
-    image: busybox
-    command: "true"
   etcd:
     network_mode: host
     restart: always
-    volumes_from:
-      - etcd-data
+    volumes:
+      - etcd-data:/var/etcd/data
     image: quay.io/coreos/etcd:v${ETCD_VERSION}
     command: |
-      --addr=127.0.0.1:4001
-      --bind-addr=0.0.0.0:4001
+      --listen-client-urls=http://127.0.0.1:4001
+      --advertise-client-urls=http://127.0.0.1:4001
       --data-dir=/var/etcd/data
+
   kubelet:
     privileged: true
     network_mode: host
@@ -27,57 +27,63 @@ services:
       - /var/lib/docker/:/var/lib/docker:rw
       - /var/lib/kubelet/:/var/lib/kubelet:rw
       - /var/run:/var/run:rw
-    image: gcr.io/google_containers/hyperkube-amd64:${K8S_VERSION}
+    image: gcr.io/google_containers/hyperkube-amd64:v${K8S_VERSION}
     command: |
       /hyperkube kubelet
-        --api_servers=http://127.0.0.1:8080
-        --v=1
-        --address=0.0.0.0
         --containerized
-        --hostname_override=127.0.0.1
-        --allow_privileged=true
+        --hostname-override=127.0.0.1
+        --address=0.0.0.0
+        --api-servers=http://127.0.0.1:8080
+        --cluster-dns=10.0.0.10
+        --cluster-domain=cluster.local
+        --allow-privileged=true
+        --v=1
         --logtostderr=true
-        --cluster_dns=${DNS_IP}
-        --cluster_domain=${DNS_DOMAIN}
-  kube-apiserver:
+
+  apiserver:
     network_mode: host
     restart: always
-    image: gcr.io/google_containers/hyperkube-amd64:${K8S_VERSION}
+    image: gcr.io/google_containers/hyperkube-amd64:v${K8S_VERSION}
     command: |
       /hyperkube apiserver
-        --runtime-config=extensions/v1beta1/daemonsets=true
-        --service-cluster-ip-range=10.0.0.0/16
-        --insecure_bind_address=0.0.0.0
-        --insecure_port=8080
-        --etcd_servers=http://127.0.0.1:4001
+        --insecure-bind-address=0.0.0.0
+        --insecure-port=8080
+        --service-cluster-ip-range=10.0.0.1/24
+        --etcd-servers=http://127.0.0.1:4001
+        --min-request-timeout=300
+        --allow-privileged=true
         --v=1
-        --allow_privileged=true
         --logtostderr=true
-  kube-controller-manager:
+
+  controller-manager:
     network_mode: host
     restart: always
-    image: gcr.io/google_containers/hyperkube-amd64:${K8S_VERSION}
+    image: gcr.io/google_containers/hyperkube-amd64:v${K8S_VERSION}
     command: |
       /hyperkube controller-manager
         --master=127.0.0.1:8080
+        --min-resync-period=3m
         --v=1
         --logtostderr=true
-  kube-scheduler:
+
+  scheduler:
     network_mode: host
     restart: always
-    image: gcr.io/google_containers/hyperkube-amd64:${K8S_VERSION}
+    image: gcr.io/google_containers/hyperkube-amd64:v${K8S_VERSION}
     command: |
       /hyperkube scheduler
         --master=127.0.0.1:8080
         --v=1
         --logtostderr=true
-  kube-proxy:
+
+  proxy:
     network_mode: host
     restart: always
     privileged: true
-    image: gcr.io/google_containers/hyperkube-amd64:${K8S_VERSION}
+    image: gcr.io/google_containers/hyperkube-amd64:v${K8S_VERSION}
     command: |
       /hyperkube proxy
         --master=127.0.0.1:8080
         --v=1
+        --resource-container=""
         --logtostderr=true

@@ -22,7 +22,7 @@ spec:
       - name: kubernetes-dashboard
         image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.0.0
         args:
-          - --apiserver-host=http://192.168.64.5:8080
+          - --apiserver-host=http://172.17.0.1:8080
         resources:
           # keep request = limit to keep this container in guaranteed class
           limits:

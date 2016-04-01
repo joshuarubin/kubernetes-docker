@@ -80,7 +80,7 @@ spec:
           timeoutSeconds: 5
         args:
         # command = "/kube2sky"
-        - --kube-master-url=http://192.168.64.5:8080
+        - --kube-master-url=http://172.17.0.1:8080
         - --domain=cluster.local
       - name: skydns
         image: gcr.io/google_containers/skydns:2015-10-13-8c72f8c
