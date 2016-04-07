@@ -29,16 +29,17 @@ services:
       - /var/run:/var/run:rw
     image: gcr.io/google_containers/hyperkube-amd64:v${K8S_VERSION}
     command: |
-      /hyperkube kubelet
-        --containerized
-        --hostname-override=127.0.0.1
-        --address=0.0.0.0
-        --api-servers=http://127.0.0.1:8080
-        --cluster-dns=10.0.0.10
-        --cluster-domain=cluster.local
-        --allow-privileged=true
-        --v=1
-        --logtostderr=true
+      sh -c 'mount -o remount,rw /proc/sys && \
+      /hyperkube kubelet \
+        --containerized \
+        --hostname-override=127.0.0.1 \
+        --address=0.0.0.0 \
+        --api-servers=http://127.0.0.1:8080 \
+        --cluster-dns=10.0.0.10 \
+        --cluster-domain=cluster.local \
+        --allow-privileged=true \
+        --v=1 \
+        --logtostderr=true'
 
   apiserver:
     network_mode: host
@@ -82,8 +83,8 @@ services:
     privileged: true
     image: gcr.io/google_containers/hyperkube-amd64:v${K8S_VERSION}
     command: |
-      /hyperkube proxy
-        --master=127.0.0.1:8080
-        --v=1
-        --resource-container=""
-        --logtostderr=true
+      sh -c 'mount -o remount,rw /proc/sys && \
+      /hyperkube proxy \
+        --master=127.0.0.1:8080 \
+        --v=1 \
+        --logtostderr=true'
